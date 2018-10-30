@@ -1,0 +1,16 @@
+{
+    "name": "ArduinoMustache",
+    "keywords": "arduino, mustache, esp8266",
+    "description": "Add support for mustache on the arduino platform",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bloft/ArduinoMustache.git"
+    },
+    "version": "0.1",
+    "exclude": "tests",
+    "examples": "examples/*/*.ino",
+    "frameworks": "arduino",
+    "platforms": [
+        "espressif"
+    ]
+}
