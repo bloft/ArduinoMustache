@@ -44,36 +44,39 @@ void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *en
         switch(buffer[0]) {
           case '#': // Sections
           case '^': // Inverted Sections
+            {
+              bool invert = buffer[0] == '^';
             for(int i = 1; i <= bufferPos; i++) {
               buffer[i-1] = buffer[i];
             }
             bufferPos = reader.getPos(); // Store old pos to be able to return before every recursive call
 
-//            JsonVariant sectionValue = json.get<JsonVariant&>(buffer);
-//
-//            if(sectionValue.is<JsonArray>()) {
-//              sectionValue.as<JsonArray&>();
-//              for(int i = 0; i < ...size(); i++) {
-//                reader.seek(bufferPos);
-//                render(reader, json, startTag, endTag, out);
-//              }
-//            } else if(sectionValue.is<JsonObject>()) {
-//              sectionValue.as<JsonObject&>();
-//                render(reader, json, startTag, endTag, out);
-//            } else if(sectionValue.is<bool>()) {
-//              if(sectionValue.as<bool>()) {
-//                render(reader, json, startTag, endTag, out);
-//              } else {
-//                render(reader, json, startTag, endTag, [](char c){});
-//              }
-//            } else {
-//            }
-
-            // Iterate {
-            reader.seek(bufferPos);
-            render(reader, json, startTag, endTag, [](char c){});
-            // }
-
+            if(json[buffer].is<JsonArray>()) {
+              if(invert && json[buffer].size() == 0) {
+                render(reader, json, startTag, endTag, [](char c){});
+              } else {
+                for(unsigned int i = 0; i < json[buffer].size(); i++) {
+                  reader.seek(bufferPos);
+                  render(reader, json[buffer][i].as<JsonObject&>(), startTag, endTag, out);
+                }
+              }
+            } else if(json[buffer].is<JsonObject>()) {
+              if(invert) {
+                render(reader, json, startTag, endTag, [](char c){});
+              } else {
+                render(reader, json[buffer], startTag, endTag, out);
+              }
+            } else if(json[buffer].is<bool>()) {
+              if(invert ^ json[buffer].as<bool>()) {
+                render(reader, json, startTag, endTag, out);
+              } else {
+                render(reader, json, startTag, endTag, [](char c){});
+              }
+            } else {
+                // Error invalid data
+                render(reader, json, startTag, endTag, [](char c){});
+            }
+            }
             break;
           case '>': // Partials
             break;
