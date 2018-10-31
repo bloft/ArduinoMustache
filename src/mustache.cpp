@@ -21,7 +21,7 @@ int StringReader::getPos() {
   return this->pos;
 }
 
-void Mustache::render(Reader &reader, std::function<void(char)> out, char *startTag, char *endTag) {
+void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *endTag, std::function<void(char)> out) {
   int bufferPos = 0;
   char buffer[10];
   while(!reader.isEnd()) {
@@ -49,9 +49,29 @@ void Mustache::render(Reader &reader, std::function<void(char)> out, char *start
             }
             bufferPos = reader.getPos(); // Store old pos to be able to return before every recursive call
 
+//            JsonVariant sectionValue = json.get<JsonVariant&>(buffer);
+//
+//            if(sectionValue.is<JsonArray>()) {
+//              sectionValue.as<JsonArray&>();
+//              for(int i = 0; i < ...size(); i++) {
+//                reader.seek(bufferPos);
+//                render(reader, json, startTag, endTag, out);
+//              }
+//            } else if(sectionValue.is<JsonObject>()) {
+//              sectionValue.as<JsonObject&>();
+//                render(reader, json, startTag, endTag, out);
+//            } else if(sectionValue.is<bool>()) {
+//              if(sectionValue.as<bool>()) {
+//                render(reader, json, startTag, endTag, out);
+//              } else {
+//                render(reader, json, startTag, endTag, [](char c){});
+//              }
+//            } else {
+//            }
+
             // Iterate {
             reader.seek(bufferPos);
-            render(reader, [](char c){}, startTag, endTag);
+            render(reader, json, startTag, endTag, [](char c){});
             // }
 
             break;
@@ -62,8 +82,9 @@ void Mustache::render(Reader &reader, std::function<void(char)> out, char *start
           case '/': // End of Section
             return;
           default:
-            for(int i = 0; i <= bufferPos; i++) {
-              out(buffer[i]);
+            const char *value = json.get<const char*>(buffer);
+            for(int i = 0; i <= strlen(value); i++) {
+              out(value[i]);
             }
         }
         bufferPos = 0;

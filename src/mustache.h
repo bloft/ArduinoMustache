@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <ArduinoJson.h>
 
 class Reader {
   public:
@@ -27,14 +28,14 @@ class StringReader : public Reader {
 
 class Mustache {
   public:
-    static void render(const char *mustache, std::function<void(char)> out) {
+    static void render(const char *mustache, JsonObject& json, std::function<void(char)> out) {
       StringReader reader(mustache);
-      render(reader, out, (char *)"{{", (char *)"}}");
+      render(reader, json, (char *)"{{", (char *)"}}", out);
     }
 
-    static void render(Reader &reader, std::function<void(char)> out) {
-      render(reader, out, (char *)"{{", (char *)"}}");
+    static void render(Reader &reader, JsonObject& json, std::function<void(char)> out) {
+      render(reader, json, (char *)"{{", (char *)"}}", out);
     }
 
-    static void render(Reader &reader, std::function<void(char)> out, char *startTag, char *endTag);
+    static void render(Reader &reader, JsonObject& json, char *startTag, char *endTag, std::function<void(char)> out);
 };
