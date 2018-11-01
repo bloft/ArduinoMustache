@@ -60,11 +60,13 @@ void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *en
             } else if(json[buffer].is<JsonArray>()) {
               if(invert && json[buffer].size() == 0) {
                 render(reader, json, startTag, endTag, out);
-              } else {
+              } else if(!invert && json[buffer].size() > 0) {
                 for(unsigned int i = 0; i < json[buffer].size(); i++) {
                   reader.seek(bufferPos);
                   render(reader, json[buffer][i].as<JsonObject&>(), startTag, endTag, out);
                 }
+              } else {
+                render(reader, json[buffer], startTag, endTag, [](char c){});
               }
             } else if(json[buffer].is<JsonObject>()) {
               if(invert) {

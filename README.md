@@ -5,7 +5,12 @@ This libread is still a work in progress
 
 ## Examble usage
 ```C++
-Mustache::render("Hallo {{user}}", [](char c){
+
+StaticJsonBuffer<1000> jsonBuffer;
+JsonObject& root = jsonBuffer.createObject();
+root["user"] = "World";
+
+Mustache::render("Hello {{user}}", [](char c){
   std::cout << c;
 });
 ```
