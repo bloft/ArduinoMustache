@@ -1,5 +1,6 @@
 #include "mustache.h"
 #include <cstring>
+#include <stdio.h>
 
 StringReader::StringReader(const char *data) {
   this->data = data;
@@ -50,10 +51,15 @@ void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *en
               buffer[i-1] = buffer[i];
             }
             bufferPos = reader.getPos(); // Store old pos to be able to return before every recursive call
-
-            if(json[buffer].is<JsonArray>()) {
-              if(invert && json[buffer].size() == 0) {
+            if(!json.containsKey(buffer)) {
+              if(invert) {
+                render(reader, json, startTag, endTag, out);
+              } else {
                 render(reader, json, startTag, endTag, [](char c){});
+              }
+            } else if(json[buffer].is<JsonArray>()) {
+              if(invert && json[buffer].size() == 0) {
+                render(reader, json, startTag, endTag, out);
               } else {
                 for(unsigned int i = 0; i < json[buffer].size(); i++) {
                   reader.seek(bufferPos);
@@ -62,7 +68,7 @@ void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *en
               }
             } else if(json[buffer].is<JsonObject>()) {
               if(invert) {
-                render(reader, json, startTag, endTag, [](char c){});
+                render(reader, json[buffer], startTag, endTag, [](char c){});
               } else {
                 render(reader, json[buffer], startTag, endTag, out);
               }
@@ -85,9 +91,19 @@ void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *en
           case '/': // End of Section
             return;
           default:
-            const char *value = json.get<const char*>(buffer);
-            for(int i = 0; i <= strlen(value); i++) {
-              out(value[i]);
+            {
+              if(json[buffer].is<const char*>()) {
+                strcpy(buffer, json[buffer].as<const char*>());
+              } else if(json[buffer].is<int>()) {
+                sprintf(buffer, "%d", json[buffer].as<int>());
+              } else if(json[buffer].is<float>()) {
+                sprintf(buffer, "%f", json[buffer].as<float>());
+              } else if(json[buffer].is<bool>()) {
+                sprintf(buffer, "%s", json[buffer].as<bool>() ? "true" : "false");
+              }
+              for(int i = 0; i <= strlen(buffer); i++) {
+                out(buffer[i]);
+              }
             }
         }
         bufferPos = 0;
