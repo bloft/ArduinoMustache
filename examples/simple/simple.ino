@@ -1,4 +1,4 @@
-#include <mustache.h>
+#include <Mustache.h>
 
 void setup() {
   const char *mTemplate = "Hello {{user}}";
