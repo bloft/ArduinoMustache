@@ -1,4 +1,4 @@
-#include "mustache.h"
+#include "Mustache.h"
 #include <cstring>
 #include <stdio.h>
 

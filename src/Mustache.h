@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-#include "ArduinoJson.h"
+#include <ArduinoJson.h>
 
 class Reader {
   public:
