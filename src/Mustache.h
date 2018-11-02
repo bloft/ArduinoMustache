@@ -11,16 +11,30 @@ class Reader {
 };
 
 class StringReader : public Reader {
-  private:
+  protected:
     int pos = 0;
     const char *data;
 
   public:
-    StringReader(const char *);
-    virtual char read();
-    virtual bool seek(int pos);
-    virtual bool isEnd();
-    virtual int getPos();
+    StringReader(const char *data) {
+      this->data = data;
+    }
+
+    virtual char read() {
+      return data[this->pos++];
+    }
+
+    virtual bool seek(int pos) {
+      this->pos = pos;
+    }
+
+    virtual bool isEnd() {
+      return this->pos >= strlen(this->data);
+    }
+
+    virtual int getPos() {
+      return this->pos;
+    }
 };
 
 // ToDo: add FS reader

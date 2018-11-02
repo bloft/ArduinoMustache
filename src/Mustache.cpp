@@ -2,26 +2,6 @@
 #include <cstring>
 #include <stdio.h>
 
-StringReader::StringReader(const char *data) {
-  this->data = data;
-}
-
-char StringReader::read() {
-  return data[this->pos++];
-}
-
-bool StringReader::seek(int pos) {
-  this->pos = pos;
-}
-
-bool StringReader::isEnd() {
-  return this->pos >= strlen(this->data);
-}
-
-int StringReader::getPos() {
-  return this->pos;
-}
-
 void Mustache::render(Reader &reader, JsonObject& json, char *startTag, char *endTag, std::function<void(char)> out) {
   int bufferPos = 0;
   char buffer[10];
