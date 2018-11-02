@@ -37,9 +37,6 @@ class StringReader : public Reader {
     }
 };
 
-// ToDo: add FS reader
-// ToDo: add progmem reader - https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
-
 class Mustache {
   public:
     static void render(const char *mustache, JsonObject& json, std::function<void(char)> out) {

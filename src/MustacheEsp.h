@@ -5,9 +5,7 @@
 
 class PgmReader : public StringReader {
   public:
-    PgmReader(const char * data) {
-      this->data = data;
-    }
+    PgmReader(const char * data) : StringReader(data) {}
 
     virtual char read() {
       return pgm_read_byte_near(data + pos++);
@@ -24,7 +22,7 @@ class FSReader : public Reader {
 
   public:
     FSReader(const char *filename) {
-      f = SPIFFS.open("/config.cfg", "r");
+      f = SPIFFS.open(filename, "r");
     }
 
     virtual char read() {
@@ -47,9 +45,6 @@ class FSReader : public Reader {
       f.close();
     };
 };
-
-// ToDo: add FS reader
-// ToDo: add progmem reader - https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
 
 class MustacheEsp : public Mustache {
   public:
